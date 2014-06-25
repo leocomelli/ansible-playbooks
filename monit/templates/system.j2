@@ -1,0 +1,10 @@
+check system server
+  if loadavg(1min) > {{load_1min}} then alert
+  if loadavg(5min) > {{load_5min}} for {{load_5min_cycles}} cycles then alert
+  if memory > 75% for {{memory_cycles}} cycles then alert
+  if cpu(user) > 75% for {{cpu_user_cycles}} cycles then alert
+  if cpu(system) > 30% then alert
+  if cpu(wait) > 20% then alert
+
+check filesystem rootfs with path /
+  if space usage > 80% then alert

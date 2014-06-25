@@ -1,0 +1,63 @@
+---
+- name: Create sshlogin group
+  group: name=sshlogin state=present
+  tags: 
+    - common
+    - system
+
+- name: Add server user
+  user: name={{user_name}} group=sshlogin state=present system=yes groups=sshlogin
+  tags: 
+    - common
+    - system
+
+- name: Setting authorized key
+  authorized_key: >
+    user={{user_name}}
+    state=present
+    key="{{lookup('file', '~/.ssh/id_rsa.pub')}}"
+  tags: 
+    - common
+    - system    
+
+- name: Update source.list
+  template: src=sources.list.j2 dest=/etc/apt/sources.list
+  tags: 
+    - common
+    - system 
+
+- name: Upgrade packages
+  apt: upgrade=dist force=yes update_cache=yes cache_valid_time=3600
+  tags: 
+    - common
+    - system
+  when: common_upgrade_packages
+
+- name: install common packages
+  apt: pkg={{ item }}
+       state=present
+  with_items:
+    - build-essential
+    - git
+    - vim
+    - curl
+    - python-software-properties
+    - software-properties-common
+  tags: 
+    - common
+    - system 
+
+- name: Set locale
+  template: src=locale.j2 dest=/etc/default/locale mode=0644
+  tags: 
+    - common
+    - system 
+
+- name: Set timezone
+  file: src=/usr/share/zoneinfo/{{ common_timezone }}
+        dest=/etc/localtime
+        force=yes
+        state=link
+  tags: 
+    - common
+    - system 

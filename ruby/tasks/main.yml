@@ -1,0 +1,54 @@
+---
+- name: Add hellobits.com key
+  apt_key: url=http://apt.hellobits.com/hellobits.key
+  tags: ruby
+
+- name: Add hellobits.com repository
+  apt_repository: >
+    repo='deb http://apt.hellobits.com/ trusty main'
+    state=present
+  tags: ruby
+
+- name: Remove ruby old version
+  apt: >
+         pkg=ruby 
+         state=absent
+  tags: ruby
+
+- name: Install ruby 2.1 latest version
+  apt: >
+        pkg=ruby-2.1
+        update_cache=yes
+        cache_valid_time=3600
+        state=latest
+        force=yes
+  tags: ruby        
+
+- name: Install dependencies
+  apt: "pkg={{item}} state=latest force=yes"
+  with_items:
+    - autoconf
+    - automake
+    - bison
+    - libc6-dev
+    - libffi-dev
+    - libreadline6
+    - libreadline6-dev
+    - libssl-dev
+    - libtool
+    - libxml2-dev
+    - libxslt-dev
+    - libxslt1-dev
+    - libyaml-dev
+    - ncurses-dev
+    - zlib1g
+    - zlib1g-dev
+    - nodejs
+  tags: ruby
+
+- name: Install bundler
+  gem: >
+    name=bundler
+    user_install=no
+    state=latest
+  tags: ruby

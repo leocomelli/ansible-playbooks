@@ -1,0 +1,17 @@
+---
+- name: make sure the dependencies are installed
+  apt:
+    pkg: "{{item}}"
+    state: present
+  with_items:
+    - ntp
+    - ntpdate
+  tags: ntp
+
+- name: configure ntp (/etc/ntp.conf)
+  template:
+    src: etc_ntp.conf.j2
+    dest: /etc/ntp.conf
+  notify:
+    - restart ntp
+  tags: ntp    

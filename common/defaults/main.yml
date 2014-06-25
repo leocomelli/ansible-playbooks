@@ -1,0 +1,15 @@
+---
+common_upgrade_packages: yes
+
+user_name: weeeb
+group_name: weeeb
+
+common_apt_mirror: http://archive.ubuntu.com/ubuntu/
+common_release_code: trusty
+
+common_timezone: America/Sao_Paulo
+
+common_locale_all: en_US.UTF-8
+common_locale_lang: en_US.UTF-8
+
+common_apt_cache_time: 3600

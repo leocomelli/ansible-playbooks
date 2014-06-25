@@ -1,0 +1,29 @@
+---
+- name: install sSMTP
+  apt: pkg={{ item }}
+       state=present
+  with_items:
+    - ssmtp
+    - mailutils
+  tags: ssmtp
+
+- name: add user in mail group
+  command: gpasswd -a {{ item }} mail
+  with_items: ssmtp_users
+  tags: ssmtp
+
+- name: create revaliases file
+  lineinfile: >
+    dest=/etc/ssmtp/revaliases 
+    line="{{ item }}:{{ ssmtp_gmail_user }}:smtp.gmail.com:587"
+  with_items: ssmtp_users
+  tags: ssmtp
+
+- name: configure ssmtp (/etc/ssmtp/ssmtp.conf)
+  template:
+    src: ssmtp.gmail.conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
+    mode: 0640
+    owner: root
+    group: mail
+  tags: ssmtp 

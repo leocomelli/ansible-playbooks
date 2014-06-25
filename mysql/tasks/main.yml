@@ -1,0 +1,100 @@
+---
+- name: Make sure the MySql packages are installed
+  apt: pkg={{ item }}
+       state=present
+  with_items:
+    - mysql-server
+    - mysql-client
+    - python-mysqldb
+    - libmysqlclient-dev
+  tags: mysql
+
+- name: Ensure MySQL is running
+  service:
+    name: mysql
+    state: started
+  tags: mysql    
+
+- name: Update the my.cnf
+  template:
+    src: my.cnf.etc.j2
+    dest: /etc/mysql/my.cnf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart mysql
+  tags: mysql    
+
+- name: Set the root password.
+  mysql_user:
+    user: root
+    host: "{{item}}"
+    password: "{{mysql_root_password}}"
+  with_items:
+   - "{{ansible_hostname}}"
+   - 127.0.0.1
+   - ::1
+   - localhost
+  when: ansible_hostname != 'localhost'
+  tags: mysql  
+
+- name: Set the root password.
+  mysql_user:
+    user: root
+    host: "{{item}}"
+    password: "{{mysql_root_password}}"
+  with_items:
+   - 127.0.0.1
+   - ::1
+   - localhost
+  when: ansible_hostname == 'localhost'
+  tags: mysql  
+
+- name: Configure MySql for easy access as root user
+  template:
+    src: my.cnf.root.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+  tags: mysql    
+
+- name: Remove anonymous MySQL server user
+  mysql_user:
+    name: ""
+    host: "{{item}}"
+    state: absent
+  with_items:
+    - "{{ansible_hostname}}"
+    - localhost
+  tags: mysql    
+
+- name: Remove the MySQL test database
+  mysql_db:
+    name: test
+    state: absent
+  tags: mysql    
+
+# Create users based on mysql_dbs defaults
+- name: Make sure the MySQL databases are present
+  mysql_db:
+    name: "{{ item.name }}"
+    collation: "{{ item.collation | default('utf8_general_ci') }}"
+    encoding: "{{ item.encoding | default('utf8') }}"
+    state: present
+  with_items: mysql_dbs
+  when: mysql_dbs|length > 0
+  tags: mysql  
+
+# Create users based on mysql_users defaults
+- name: Make sure the MySQL users are present
+  mysql_user:
+    name: "{{item.name}}"
+    password: "{{item.pass | default('pass')}}"
+    priv: "{{item.priv | default('*.*:ALL')}}"
+    state: present
+    host: "{{item.host | default('localhost')}}"
+  with_items: mysql_users
+  when: mysql_users|length > 0
+  tags: mysql  

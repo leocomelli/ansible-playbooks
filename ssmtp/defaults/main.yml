@@ -1,0 +1,8 @@
+---
+ssmtp_users: [ weeeb, deploy]
+
+ssmtp_gmail_user: leonardo.comelli@gmail.com
+
+# Create a new app password in Google Security
+# https://security.google.com/settings/security/apppasswords?pli=1
+ssmtp_gmail_pass: zmugqgfmhfjyeysm

@@ -1,0 +1,15 @@
+---
+- name: Install openssh
+  apt: name=openssh-server state=present
+  tags: ssh
+
+- name: Include vagrant user in sshlogin group
+  user: name=vagrant groups=sshlogin append=yes
+  ignore_errors: yes
+
+- name: Configure ssh
+  sudo: yes
+  template: src=sshd_config.j2 dest=/etc/ssh/sshd_config mode=0644 backup=true
+  notify:
+    - restart sshd
+  tags: ssh

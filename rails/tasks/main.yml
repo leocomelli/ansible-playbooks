@@ -1,0 +1,9 @@
+---
+- include: ../../ruby/tasks/main.yml
+
+- name: Install rails
+  gem: >
+    name=rails
+    user_install=no
+    state=latest
+  tags: rails
