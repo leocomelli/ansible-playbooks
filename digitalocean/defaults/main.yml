@@ -1,0 +1,14 @@
+#
+# Defaults:
+#    - size: "cost_per_hour": "0.02976", "name": "2GB", "cpu": "2", "slug": "2gb", "memory": "2048", "disk": "40", "id": "62", "cost_per_month": "20.0"
+#    - region: New_York_2
+#    - image: Ubuntu_14.04_x64
+#
+
+do_ssh_key_ids: 172079
+do_name: weeeb
+do_size_id: 62
+do_region_id: 4
+do_image_id: 3240036
+do_backups_enabled: yes
+do_unique_name: yes
