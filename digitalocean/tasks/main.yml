@@ -10,16 +10,19 @@
     backups_enabled={{ do_backups_enabled }}
     unique_name={{ do_unique_name }}
   register: my_droplet
+  tags: do
 
 - name: Adding my new droplet IP in hosts file
   lineinfile: create=yes dest=hosts line={{ item }} state=present
   with_items:
     - '[production]'
     - '{{ my_droplet.droplet.ip_address }}'
+  tags: do
 
 - name: Gathering the public ssh host keys
   command: ssh-keyscan {{ my_droplet.droplet.ip_address }}
   register: ssh_host_my_droplet
+  tags: do
 
 - name: Adding public ssh host key in /.ssh/known_hosts
   lineinfile: >
@@ -28,3 +31,4 @@
     mode=600
     line='{{ssh_host_my_droplet.stdout}}'
     state=present
+  tags: do
